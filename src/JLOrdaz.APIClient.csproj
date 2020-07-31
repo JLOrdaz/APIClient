@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.3</Version>
+    <LangVersion>latest</LangVersion>
+    <Copyright>© 2019 Jose Luis Ordaz</Copyright>
+    <Authors>Jose Luis Ordaz</Authors>
+    <Company>Jose Luis Ordaz</Company>
+    <Product>JLOrdaz.ApiClient</Product>
+    <PackageTags>API, Restful, Client, HttpClient, JLOrdaz</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>It allows you to consume an API easily, passing the URL, indicating the type of data gets the result of the call.
+Handles GET, POST, PUT, and DELETE with variations for data types when calling the method and receiving the response.
+I currently use it in my personal projects and wanted to share it for the benefit of others.</Description>
+    <RepositoryUrl>https://github.com/JLOrdaz/BulkToSQL</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="LICENSE" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+  </ItemGroup>
+  
+</Project>
