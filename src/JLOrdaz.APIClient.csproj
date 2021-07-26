@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.0</Version>
+    <Version>2.1</Version>
     <LangVersion>latest</LangVersion>
     <Copyright>© 2021 Jose Luis Ordaz</Copyright>
     <Authors>Jose Luis Ordaz</Authors>

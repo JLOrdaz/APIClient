@@ -60,6 +60,19 @@ namespace JLOrdaz.ApiClient
             }
         }
 
+        public async Task<string> PostReadStringAsync<T>(string path, T content)
+        {
+            var response = await _httpClient.PostAsJsonAsync<T>(path, content);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                return response.ReasonPhrase;
+            }
+        }
+
         public async Task PostAsync<T>(string path, T content)
         {
             //var response = await _httpClient.PostAsJsonAsync<T>(path, content);
