@@ -7,112 +7,132 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JLOrdaz.ApiClient
+namespace JLOrdaz.ApiClient;
+
+public class Client : IClient
 {
-    public class Client
+    private readonly HttpClient _httpClient;
+    public Uri BaseEndPoint { get; set; }
+
+    public Client(string baseEndPoint)
     {
-        private readonly HttpClient _httpClient;
-        public Uri BaseEndPoint { get; set; }
+        _httpClient = new HttpClient();
+        _httpClient.BaseAddress = new Uri(baseEndPoint);
+        BaseEndPoint = new Uri(baseEndPoint);
+        Headers();
+    }
 
-        public Client(string baseEndPoint)
+    public Client(string baseEndPoint, string schema, string token)
+    {
+        _httpClient = new HttpClient();
+        _httpClient.BaseAddress = new Uri(baseEndPoint);
+        BaseEndPoint = new Uri(baseEndPoint);
+        Headers();
+        AddAuthenticationHeader(schema, token);
+    }
+
+    private void Headers()
+    {
+        _httpClient.DefaultRequestHeaders.Clear();
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    }
+
+    public void AddAuthenticationHeader(string schema, string token)
+    {
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(schema, token);
+    }
+
+    public async Task<T?> GetAsync<T>(string path) 
+    {
+        var response = await _httpClient.GetAsync(path); 
+        if (response.IsSuccessStatusCode)
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(baseEndPoint);
-            BaseEndPoint = new Uri(baseEndPoint);
-            Headers();
+            return await response.Content.ReadFromJsonAsync<T>() ?? default;
         }
-
-        public Client(string baseEndPoint, string schema, string token)
+        else
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(baseEndPoint);
-            BaseEndPoint = new Uri(baseEndPoint);
-            Headers();
-            AddAuthenticationHeader(schema, token);
+            return default;
         }
+    }
 
-        private void Headers()
+    public async Task<T1?> PostAsync<T1, T2>(string path, T2 content) 
+    {
+        var response = await _httpClient.PostAsJsonAsync<T2>(path, content);
+        if (response.IsSuccessStatusCode)
         {
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return await response.Content.ReadFromJsonAsync<T1>() ?? default;
         }
-
-        public void AddAuthenticationHeader(string schema, string token)
+        else
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(schema, token);
+            return default;
         }
+    }
 
-        public async Task<T> GetAsync<T>(string path)
+    public async Task<string> PostReadStringAsync<T>(string path, T content)
+    {
+        var response = await _httpClient.PostAsJsonAsync<T>(path, content);
+        if (response.IsSuccessStatusCode)
         {
-            return await _httpClient.GetFromJsonAsync<T>(path);
+            return await response.Content.ReadAsStringAsync() ?? string.Empty;
         }
-
-        public async Task<T1> PostAsync<T1, T2>(string path, T2 content)
+        else
         {
-            var response = await _httpClient.PostAsJsonAsync<T2>(path, content);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<T1>();
-            }
-            else
-            {
-                return default(T1);
-            }
+            return response.ReasonPhrase ?? string.Empty;
         }
+    }
 
-        public async Task<string> PostReadStringAsync<T>(string path, T content)
+
+    public async Task<string> PostReadStringAsync(string path)
+    {
+        var response = await this._httpClient.PostAsync(path, null);
+        if (response.IsSuccessStatusCode)
         {
-            var response = await _httpClient.PostAsJsonAsync<T>(path, content);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadAsStringAsync();
-            }
-            else
-            {
-                return response.ReasonPhrase;
-            }
+            return await response.Content.ReadAsStringAsync();
         }
-
-        public async Task PostAsync<T>(string path, T content)
+        else
         {
-            //var response = await _httpClient.PostAsJsonAsync<T>(path, content);
-            await _httpClient.PostAsJsonAsync<T>(path, content);
+            return response.ReasonPhrase ?? string.Empty;
         }
+    }
 
-        public async Task PutAsync<T>(string path, T content)
+    public async Task PostAsync<T>(string path, T content)
+    {
+        await _httpClient.PostAsJsonAsync<T>(path, content);
+    }
+
+    public async Task PutAsync<T>(string path, T content)
+    {
+        await _httpClient.PutAsJsonAsync<T>(path, content);
+    }
+
+    public async Task<T?> PutAsync<T, U>(string path, U content)
+    {
+        var response = await _httpClient.PutAsJsonAsync<U>(path, content);
+        if (response.IsSuccessStatusCode)
         {
-            await _httpClient.PutAsJsonAsync<T>(path, content);
+            return await response.Content.ReadFromJsonAsync<T>() ?? default;
         }
-
-        public async Task<T1> PutAsync<T1, T2>(string path, T2 content)
+        else
         {
-            var response = await _httpClient.PutAsJsonAsync<T2>(path, content);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<T1>();
-            }
-            else
-            {
-                return default(T1);
-            }
+            return default;
         }
+    }
 
-        public async Task DeleteAsync(string path)
+    public async Task DeleteAsync(string path)
+    {
+        await _httpClient.DeleteAsync(path);
+    }
+
+    public async Task<T> DeleteAsync<T>(string path)
+    {
+        var response = await _httpClient.DeleteAsync(path);
+        if (response.IsSuccessStatusCode)
         {
-            await _httpClient.DeleteAsync(path);
+            return await response.Content.ReadFromJsonAsync<T>() ?? default(T)!;
         }
-
-        public async Task<T> DeleteAsync<T>(string path)
+        else
         {
-            var response = await _httpClient.DeleteAsync(path);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<T>();
-            }
-            else
-            {
-                return default(T);
-            }
+            return default(T)!;
         }
     }
 }
