@@ -12,5 +12,5 @@ public interface IClient
     Task<T?> PutAsync<T, U>(string path, U content);
     Task DeleteAsync(string path);
     Task<T> DeleteAsync<T>(string path);
-
+    Task<string> GetStringAsync(string path);
 }

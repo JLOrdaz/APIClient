@@ -135,4 +135,10 @@ public class Client : IClient
             return default(T)!;
         }
     }
+
+    public async Task<string> GetStringAsync(string path)
+    {
+        var response = await _httpClient.GetStringAsync(path); 
+        return string.IsNullOrEmpty(response) ? string.Empty : response;
+    }
 }
